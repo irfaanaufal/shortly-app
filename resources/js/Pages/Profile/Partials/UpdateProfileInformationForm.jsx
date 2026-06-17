@@ -11,7 +11,8 @@ export default function UpdateProfileInformation({
     status,
     className = '',
 }) {
-    const user = usePage().props.auth.user;
+    const { auth, storage_url } = usePage().props;
+    const user = auth.user;
     const [photoPreview, setPhotoPreview] = useState(null);
     const photoInput = useRef();
 
@@ -84,7 +85,7 @@ export default function UpdateProfileInformation({
                                 />
                             ) : user.profile_photo_path ? (
                                 <img
-                                    src={`/storage/${user.profile_photo_path}`}
+                                    src={`${storage_url}/${user.profile_photo_path}`}
                                     alt={user.name}
                                     className="w-20 h-20 rounded-2xl object-cover ring-4 ring-neutral-100 dark:ring-neutral-800 shadow-md transition-all group-hover:brightness-90"
                                 />

@@ -1,11 +1,12 @@
-// PENTING: Ganti 'company-logo.png' dengan nama file logo Anda yang sebenarnya!
-import companyLogo from '../../images/logo.png';
+import { usePage } from '@inertiajs/react';
 
 export default function ApplicationLogo(props) {
+    const { logo_url } = usePage().props;
+
     return (
         <img
             {...props}
-            src={companyLogo}
+            src={logo_url}
             alt="Company Logo"
             style={{ objectFit: 'contain' }}
         />

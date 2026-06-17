@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import * as Icons from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -8,6 +8,7 @@ const DynamicIcon = ({ name, className }) => {
 };
 
 export default function PublicShortcuts({ owner, shortcuts = [] }) {
+    const { storage_url } = usePage().props;
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [showSearch, setShowSearch] = useState(false);
@@ -74,7 +75,7 @@ export default function PublicShortcuts({ owner, shortcuts = [] }) {
                 <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-md ring-4 ring-neutral-100 dark:ring-neutral-900/40 relative">
                     {owner.profile_photo_path ? (
                         <img
-                            src={`/storage/${owner.profile_photo_path}`}
+                            src={`${storage_url}/${owner.profile_photo_path}`}
                             alt={owner.name}
                             className="w-full h-full rounded-2xl object-cover"
                         />

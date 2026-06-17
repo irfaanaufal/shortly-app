@@ -7,7 +7,8 @@ import { useState, useEffect } from 'react';
 import * as Icons from 'lucide-react';
 
 export default function AuthenticatedLayout({ header, children }) {
-    const user = usePage().props.auth.user;
+    const { auth, storage_url } = usePage().props;
+    const user = auth.user;
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(false);
 
@@ -78,7 +79,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                             <button type="button" className="inline-flex items-center gap-2 rounded-xl border border-neutral-200/60 bg-white px-3.5 py-2 text-xs font-bold text-neutral-700 shadow-sm dark:border-neutral-800 dark:bg-[#121212] dark:text-neutral-300">
                                                 {user.profile_photo_path ? (
                                                     <img
-                                                        src={`/storage/${user.profile_photo_path}`}
+                                                        src={`${storage_url}/${user.profile_photo_path}`}
                                                         alt={user.name}
                                                         className="w-5 h-5 rounded object-cover shrink-0"
                                                     />
@@ -134,7 +135,7 @@ export default function AuthenticatedLayout({ header, children }) {
                         <div className="flex items-center px-4">
                             {user.profile_photo_path ? (
                                 <img
-                                    src={`/storage/${user.profile_photo_path}`}
+                                    src={`${storage_url}/${user.profile_photo_path}`}
                                     alt={user.name}
                                     className="w-10 h-10 rounded object-cover shrink-0"
                                 />

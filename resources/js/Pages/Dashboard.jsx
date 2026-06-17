@@ -219,7 +219,6 @@ const DynamicIcon = ({ name, className }) => {
 export default function Dashboard({ shortcuts = [], userShortcuts = [] }) {
     const { auth } = usePage().props;
     const [copied, setCopied] = useState(false);
-    const [origin, setOrigin] = useState('');
 
     const handleDelete = (shortcutId) => {
         if (confirm('Apakah Anda yakin ingin menghapus shortcut ini secara permanen dari seluruh sistem?')) {
@@ -234,10 +233,6 @@ export default function Dashboard({ shortcuts = [], userShortcuts = [] }) {
         handleDelete(shortcutId);
     };
 
-    useEffect(() => {
-        setOrigin(window.location.origin);
-    }, []);
-
     const usernameForm = useForm({
         username: auth.user.username || '',
     });
@@ -246,7 +241,26 @@ export default function Dashboard({ shortcuts = [], userShortcuts = [] }) {
         shortcut_ids: userShortcuts || [],
     });
 
-    const publicUrl = origin ? `${origin}/u/${auth.user.username}` : '';
+    const publicUrl = (() => {
+        if (typeof window === 'undefined') return '';
+        const origin = window.location.origin;
+        const path = window.location.pathname;
+        const pathLower = path.toLowerCase();
+
+        const publicIndex = pathLower.indexOf('/shortly-app/public/index.php');
+        if (publicIndex !== -1) {
+            const subDir = path.substring(0, publicIndex);
+            return `${origin}${subDir}/shortly-app/public/index.php/u/${auth.user.username}`;
+        }
+
+        const dashboardIndex = pathLower.indexOf('/dashboard');
+        if (dashboardIndex !== -1) {
+            const subDir = path.substring(0, dashboardIndex);
+            return `${origin}${subDir}/shortly-app/public/index.php/u/${auth.user.username}`;
+        }
+
+        return `${origin}/shortly-app/public/index.php/u/${auth.user.username}`;
+    })();
 
     const fallbackCopy = (text) => {
         const textArea = document.createElement("textarea");
@@ -339,8 +353,8 @@ export default function Dashboard({ shortcuts = [], userShortcuts = [] }) {
                                         disabled={!publicUrl}
                                         type="button"
                                         className={`shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all active:scale-95 border ${copied
-                                                ? 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900 border-neutral-900 dark:border-neutral-100'
-                                                : 'bg-white dark:bg-[#1e1e1e] text-slate-700 dark:text-neutral-200 border-neutral-200 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-800'
+                                            ? 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900 border-neutral-900 dark:border-neutral-100'
+                                            : 'bg-white dark:bg-[#1e1e1e] text-slate-700 dark:text-neutral-200 border-neutral-200 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-800'
                                             }`}
                                     >
                                         {copied ? (
@@ -409,8 +423,8 @@ export default function Dashboard({ shortcuts = [], userShortcuts = [] }) {
                                         )}
                                     </h2>
                                     <p className="text-xs text-neutral-400 dark:text-neutral-400 mt-0.5">
-                                        {auth.user.role === 'admin' 
-                                            ? 'Kelola pustaka shortcut sistem atau pilih untuk grid pribadi Anda.' 
+                                        {auth.user.role === 'admin'
+                                            ? 'Kelola pustaka shortcut sistem atau pilih untuk grid pribadi Anda.'
                                             : 'Buat shortcut kustom pribadi Anda atau sematkan pintasan bawaan.'}
                                     </p>
                                 </div>
@@ -439,14 +453,14 @@ export default function Dashboard({ shortcuts = [], userShortcuts = [] }) {
                                                 type="button"
                                                 onClick={() => handleShortcutToggle(shortcut.id)}
                                                 className={`relative flex items-start text-left gap-3.5 p-4 rounded-xl border transition-all ${isChecked
-                                                        ? 'border-neutral-900 bg-neutral-50 dark:border-white dark:bg-[#2d2d2d] ring-1 ring-neutral-900 dark:ring-white'
-                                                        : 'border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1e1e1e] hover:bg-neutral-50 dark:hover:bg-[#2d2d2d]/50'
+                                                    ? 'border-neutral-900 bg-neutral-50 dark:border-white dark:bg-[#2d2d2d] ring-1 ring-neutral-900 dark:ring-white'
+                                                    : 'border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1e1e1e] hover:bg-neutral-50 dark:hover:bg-[#2d2d2d]/50'
                                                     }`}
                                             >
                                                 {/* Checkbox Square Monochrome */}
                                                 <span className={`absolute top-4 right-4 w-4 h-4 rounded flex items-center justify-center border transition-all ${isChecked
-                                                        ? 'bg-neutral-900 border-neutral-900 text-white dark:bg-white dark:border-white dark:text-neutral-900'
-                                                        : 'border-neutral-300 dark:border-neutral-700 bg-transparent'
+                                                    ? 'bg-neutral-900 border-neutral-900 text-white dark:bg-white dark:border-white dark:text-neutral-900'
+                                                    : 'border-neutral-300 dark:border-neutral-700 bg-transparent'
                                                     }`}>
                                                     <Icons.Check className={`w-3 h-3 stroke-[3] transition-opacity ${isChecked ? 'opacity-100' : 'opacity-0'}`} />
                                                 </span>
