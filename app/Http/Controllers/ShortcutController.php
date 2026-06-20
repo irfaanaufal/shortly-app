@@ -91,6 +91,18 @@ class ShortcutController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        if ($request->has('url')) {
+            $url = trim($request->input('url'));
+            if ($url !== '') {
+                if (str_starts_with($url, '/')) {
+                    $url = 'http://hfg093wdn44.sn.mynetname.net' . $url;
+                } elseif (!preg_match('~^[a-zA-Z][a-zA-Z0-9.+-]*://~', $url)) {
+                    $url = 'http://hfg093wdn44.sn.mynetname.net/' . $url;
+                }
+                $request->merge(['url' => $url]);
+            }
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'url' => 'required|url|max:500',
@@ -145,6 +157,18 @@ class ShortcutController extends Controller
         } else {
             if ($shortcut->user_id !== $request->user()->id) {
                 abort(403, 'Unauthorized action.');
+            }
+        }
+
+        if ($request->has('url')) {
+            $url = trim($request->input('url'));
+            if ($url !== '') {
+                if (str_starts_with($url, '/')) {
+                    $url = 'http://hfg093wdn44.sn.mynetname.net' . $url;
+                } elseif (!preg_match('~^[a-zA-Z][a-zA-Z0-9.+-]*://~', $url)) {
+                    $url = 'http://hfg093wdn44.sn.mynetname.net/' . $url;
+                }
+                $request->merge(['url' => $url]);
             }
         }
 

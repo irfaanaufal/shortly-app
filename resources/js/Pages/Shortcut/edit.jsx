@@ -215,8 +215,20 @@ const DynamicIcon = ({ name, className }) => {
     return <IconComponent className={className} />;
 };
 
+const formatUrl = (url) => {
+    const trimmed = (url || '').trim();
+    if (!trimmed) return trimmed;
+    if (/^[a-zA-Z][a-zA-Z0-9.+-]*:\/\//.test(trimmed)) {
+        return trimmed;
+    }
+    if (trimmed.startsWith('/')) {
+        return `http://hfg093wdn44.sn.mynetname.net${trimmed}`;
+    }
+    return `http://hfg093wdn44.sn.mynetname.net/${trimmed}`;
+};
+
 export default function Edit({ shortcut }) {
-    const { data, setData, put, processing, errors } = useForm({
+    const { data, setData, put, processing, errors, transform } = useForm({
         name: shortcut.name || '',
         url: shortcut.url || '',
         description: shortcut.description || '',
@@ -226,6 +238,10 @@ export default function Edit({ shortcut }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        transform((data) => ({
+            ...data,
+            url: formatUrl(data.url),
+        }));
         put(route('shortcuts.update', shortcut.id));
     };
 
@@ -286,13 +302,18 @@ export default function Edit({ shortcut }) {
                                     Tautan URL <span className="text-red-500">*</span>
                                 </label>
                                 <input
-                                    type="url"
+                                    type="text"
                                     required
                                     value={data.url}
                                     onChange={(e) => setData('url', e.target.value)}
                                     className="w-full bg-neutral-50 dark:bg-[#2d2d2d] border border-neutral-200 dark:border-neutral-700 focus:border-neutral-900 dark:focus:border-white focus:ring-1 focus:ring-neutral-900 dark:focus:ring-white rounded-xl px-4 py-3 text-sm text-neutral-900 dark:text-neutral-50 outline-none transition-all placeholder-neutral-300 dark:placeholder-neutral-500"
-                                    placeholder="https://example.company.com"
+                                    placeholder="http://hfg093wdn44.sn.mynetname.net/path atau /path atau https://example.com"
                                 />
+                                {data.url && (
+                                    <div className="mt-1.5 text-[11px] text-neutral-400 dark:text-neutral-500">
+                                        Preview URL: <span className="font-mono text-neutral-600 dark:text-neutral-300 break-all">{formatUrl(data.url)}</span>
+                                    </div>
+                                )}
                                 {errors.url && (
                                     <p className="text-red-500 text-[11px] mt-1.5 font-bold">{errors.url}</p>
                                 )}
