@@ -227,10 +227,22 @@ const formatUrl = (url) => {
     return `http://hfg093wdn44.sn.mynetname.net/${trimmed}`;
 };
 
+const cleanUrlInput = (value) => {
+    const baseHttp = 'http://hfg093wdn44.sn.mynetname.net';
+    const baseHttps = 'https://hfg093wdn44.sn.mynetname.net';
+    let cleaned = value;
+    if (cleaned.startsWith(baseHttps)) {
+        cleaned = cleaned.substring(baseHttps.length);
+    } else if (cleaned.startsWith(baseHttp)) {
+        cleaned = cleaned.substring(baseHttp.length);
+    }
+    return cleaned;
+};
+
 export default function Create() {
     const { data, setData, post, processing, errors, transform } = useForm({
         name: '',
-        url: 'http://hfg093wdn44.sn.mynetname.net',
+        url: '',
         description: '',
         icon: 'Link2',
         color: 'from-blue-500 to-cyan-500',
@@ -289,7 +301,7 @@ export default function Create() {
                                     value={data.name}
                                     onChange={(e) => setData('name', e.target.value)}
                                     className="w-full bg-neutral-50 dark:bg-[#2d2d2d] border border-neutral-200 dark:border-neutral-700 focus:border-neutral-900 dark:focus:border-white focus:ring-1 focus:ring-neutral-900 dark:focus:ring-white rounded-xl px-4 py-3 text-sm text-neutral-900 dark:text-neutral-50 outline-none transition-all placeholder-neutral-300 dark:placeholder-neutral-500"
-                                    placeholder="Contoh: HRIS, Jira, Wiki"
+                                    placeholder="Contoh: Admin, CeklisQC, Absensi"
                                 />
                                 {errors.name && (
                                     <p className="text-red-500 text-[11px] mt-1.5 font-bold">{errors.name}</p>
@@ -301,14 +313,19 @@ export default function Create() {
                                 <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-200 mb-1.5 uppercase tracking-wider">
                                     Tautan URL <span className="text-red-500">*</span>
                                 </label>
-                                <input
-                                    type="text"
-                                    required
-                                    value={data.url}
-                                    onChange={(e) => setData('url', e.target.value)}
-                                    className="w-full bg-neutral-50 dark:bg-[#2d2d2d] border border-neutral-200 dark:border-neutral-700 focus:border-neutral-900 dark:focus:border-white focus:ring-1 focus:ring-neutral-900 dark:focus:ring-white rounded-xl px-4 py-3 text-sm text-neutral-900 dark:text-neutral-50 outline-none transition-all placeholder-neutral-300 dark:placeholder-neutral-500"
-                                    placeholder="http://hfg093wdn44.sn.mynetname.net/path atau /path atau https://example.com"
-                                />
+                                <div className="flex rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-[#2d2d2d] focus-within:border-neutral-900 dark:focus-within:border-white focus-within:ring-1 focus-within:ring-neutral-900 dark:focus-within:ring-white transition-all overflow-hidden">
+                                    <span className="inline-flex items-center px-4 py-3 bg-neutral-100 dark:bg-[#222222] border-r border-neutral-200 dark:border-neutral-700 text-sm text-neutral-500 dark:text-neutral-400 font-mono select-none">
+                                        http://hfg093wdn44.sn.mynetname.net
+                                    </span>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={data.url}
+                                        onChange={(e) => setData('url', cleanUrlInput(e.target.value))}
+                                        className="flex-1 min-w-0 bg-transparent border-0 focus:ring-0 focus:outline-none px-4 py-3 text-sm text-neutral-900 dark:text-neutral-50 placeholder-neutral-300 dark:placeholder-neutral-500"
+                                        placeholder="/path atau path"
+                                    />
+                                </div>
                                 {data.url && (
                                     <div className="mt-1.5 text-[11px] text-neutral-400 dark:text-neutral-500">
                                         Preview URL: <span className="font-mono text-neutral-600 dark:text-neutral-300 break-all">{formatUrl(data.url)}</span>
@@ -348,11 +365,10 @@ export default function Create() {
                                                 key={iconName}
                                                 type="button"
                                                 onClick={() => setData('icon', iconName)}
-                                                className={`flex items-center justify-center p-3 rounded-xl border transition-all ${
-                                                    isSelected
+                                                className={`flex items-center justify-center p-3 rounded-xl border transition-all ${isSelected
                                                         ? 'bg-neutral-900 border-neutral-900 text-white dark:bg-white dark:border-white dark:text-neutral-900 shadow-md scale-105'
                                                         : 'bg-white border-neutral-200 dark:bg-[#1e1e1e] dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-850'
-                                                }`}
+                                                    }`}
                                                 title={iconName}
                                             >
                                                 <DynamicIcon name={iconName} className="w-5 h-5" />
@@ -378,11 +394,10 @@ export default function Create() {
                                                 key={colorObj.value}
                                                 type="button"
                                                 onClick={() => setData('color', colorObj.value)}
-                                                className={`flex items-center gap-2.5 p-2 rounded-xl border transition-all text-left text-xs font-semibold ${
-                                                    isSelected
+                                                className={`flex items-center gap-2.5 p-2 rounded-xl border transition-all text-left text-xs font-semibold ${isSelected
                                                         ? 'bg-neutral-900 border-neutral-900 text-white dark:bg-white dark:border-white dark:text-neutral-900 shadow-md scale-[1.02]'
                                                         : 'bg-white border-neutral-200 dark:bg-[#1e1e1e] dark:border-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-850'
-                                                }`}
+                                                    }`}
                                             >
                                                 <span className={`w-4 h-4 rounded-lg bg-gradient-to-tr ${colorObj.value} shrink-0 shadow-sm`} />
                                                 <span className="truncate">{colorObj.name}</span>
