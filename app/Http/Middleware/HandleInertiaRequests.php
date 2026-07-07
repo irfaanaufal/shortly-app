@@ -35,7 +35,7 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
             ],
             'logo_url' => asset('images/logo.png'),
-            'storage_url' => asset(''),
+            'storage_url' => rtrim(asset(''), '/'),
         ];
     }
 }

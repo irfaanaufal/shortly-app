@@ -1,6 +1,7 @@
-import { Head, usePage } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import * as Icons from 'lucide-react';
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const DynamicIcon = ({ name, className }) => {
     const IconComponent = Icons[name] || Icons.Link2;
@@ -8,10 +9,10 @@ const DynamicIcon = ({ name, className }) => {
 };
 
 export default function PublicShortcuts({ owner, shortcuts = [] }) {
-    const { storage_url } = usePage().props;
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [showSearch, setShowSearch] = useState(false);
+    const [activeCategory, setActiveCategory] = useState('Semua');
 
     useEffect(() => {
         const savedTheme = localStorage.getItem('theme');
@@ -38,10 +39,15 @@ export default function PublicShortcuts({ owner, shortcuts = [] }) {
         }
     };
 
-    const filteredShortcuts = shortcuts.filter(shortcut => 
-        shortcut.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (shortcut.description && shortcut.description.toLowerCase().includes(searchQuery.toLowerCase()))
-    );
+    const categories = ['Semua', ...new Set(shortcuts.map((s) => s.category).filter(Boolean))];
+
+    const filteredShortcuts = shortcuts.filter(shortcut => {
+        const matchesSearch = shortcut.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (shortcut.description && shortcut.description.toLowerCase().includes(searchQuery.toLowerCase()));
+        const matchesCategory = activeCategory === 'Semua' || shortcut.category === activeCategory;
+        return matchesSearch && matchesCategory;
+    });
+
 
     return (
         <div className="min-h-screen bg-neutral-50 dark:bg-[#121212] text-neutral-900 dark:text-neutral-100 flex flex-col items-center justify-between p-4 sm:p-8 relative antialiased transition-colors duration-200">
@@ -73,9 +79,9 @@ export default function PublicShortcuts({ owner, shortcuts = [] }) {
             {/* Header Profile Area */}
             <header className="w-full max-w-xl text-center mt-12 sm:mt-16 space-y-5 z-10">
                 <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-md ring-4 ring-neutral-100 dark:ring-neutral-900/40 relative">
-                    {owner.profile_photo_path ? (
+                    {owner.profile_photo_url ? (
                         <img
-                            src={`${storage_url}/${owner.profile_photo_path}`}
+                            src={owner.profile_photo_url}
                             alt={owner.name}
                             className="w-full h-full rounded-2xl object-cover"
                         />
@@ -119,6 +125,25 @@ export default function PublicShortcuts({ owner, shortcuts = [] }) {
                                 </button>
                             )}
                         </div>
+                    </div>
+                )}
+
+                {/* Category Tabs */}
+                {categories.length > 1 && (
+                    <div className="w-full mb-6 flex flex-wrap justify-center gap-2">
+                        {categories.map((cat) => (
+                            <button
+                                key={cat}
+                                onClick={() => setActiveCategory(cat)}
+                                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                                    activeCategory === cat
+                                        ? 'bg-neutral-900 text-white dark:bg-white dark:text-neutral-900'
+                                        : 'bg-white dark:bg-[#1e1e1e] text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-800'
+                                }`}
+                            >
+                                {cat}
+                            </button>
+                        ))}
                     </div>
                 )}
 

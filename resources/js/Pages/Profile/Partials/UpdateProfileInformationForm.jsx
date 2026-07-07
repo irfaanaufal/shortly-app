@@ -11,7 +11,7 @@ export default function UpdateProfileInformation({
     status,
     className = '',
 }) {
-    const { auth, storage_url } = usePage().props;
+    const { auth } = usePage().props;
     const user = auth.user;
     const [photoPreview, setPhotoPreview] = useState(null);
     const photoInput = useRef();
@@ -83,9 +83,9 @@ export default function UpdateProfileInformation({
                                     alt="Profile Preview"
                                     className="w-20 h-20 rounded-2xl object-cover ring-4 ring-neutral-100 dark:ring-neutral-800 shadow-md transition-all group-hover:brightness-90"
                                 />
-                            ) : user.profile_photo_path ? (
+                            ) : user.profile_photo_url ? (
                                 <img
-                                    src={`${storage_url}/${user.profile_photo_path}`}
+                                    src={user.profile_photo_url}
                                     alt={user.name}
                                     className="w-20 h-20 rounded-2xl object-cover ring-4 ring-neutral-100 dark:ring-neutral-800 shadow-md transition-all group-hover:brightness-90"
                                 />

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -17,12 +18,14 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(AdminSeeder::class);
 
+        $userRole = Role::where('name', 'user')->first();
+
         User::factory()->create([
             'name' => 'User01',
             'username' => 'User01',
             'email' => 'user01@example.com',
             'password' => 'password',
-            'role' => 'user',
+            'role_id' => $userRole?->id,
         ]);
 
         $shortcuts = [

@@ -19,8 +19,11 @@ class ShortcutController extends Controller
     public function index(Request $request): Response
     {
         $user = $request->user();
-        $shortcuts = Shortcut::whereNull('user_id')
-            ->orWhere('user_id', $user->id)
+        $shortcuts = Shortcut::where('is_active', true)
+            ->where(function ($q) use ($user) {
+                $q->whereNull('user_id')
+                  ->orWhere('user_id', $user->id);
+            })
             ->get();
 
         return Inertia::render('Dashboard', [
@@ -111,16 +114,11 @@ class ShortcutController extends Controller
             'color' => 'required|string|max:255',
         ]);
 
-        $userId = $request->user()->role === 'admin' ? null : $request->user()->id;
-
         $shortcut = Shortcut::create(array_merge($validated, [
-            'user_id' => $userId,
+            'user_id' => $request->user()->id,
         ]));
 
-        // Otomatis centang shortcut kustom baru untuk pembuatnya
-        if ($userId !== null) {
-            $request->user()->shortcuts()->attach($shortcut->id);
-        }
+        $request->user()->shortcuts()->attach($shortcut->id);
 
         return redirect()->route('dashboard')->with('status', 'shortcut-created');
     }
@@ -131,13 +129,11 @@ class ShortcutController extends Controller
     public function edit(Request $request, Shortcut $shortcut): Response
     {
         if ($shortcut->user_id === null) {
-            if ($request->user()->role !== 'admin') {
-                abort(403, 'Unauthorized action.');
-            }
-        } else {
-            if ($shortcut->user_id !== $request->user()->id) {
-                abort(403, 'Unauthorized action.');
-            }
+            abort(403, 'Global shortcuts cannot be edited by users.');
+        }
+
+        if ($shortcut->user_id !== $request->user()->id) {
+            abort(403, 'Unauthorized action.');
         }
 
         return Inertia::render('Shortcut/edit', [
@@ -145,19 +141,14 @@ class ShortcutController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified shortcut.
-     */
     public function updateShortcut(Request $request, Shortcut $shortcut): RedirectResponse
     {
         if ($shortcut->user_id === null) {
-            if ($request->user()->role !== 'admin') {
-                abort(403, 'Unauthorized action.');
-            }
-        } else {
-            if ($shortcut->user_id !== $request->user()->id) {
-                abort(403, 'Unauthorized action.');
-            }
+            abort(403, 'Global shortcuts cannot be edited by users.');
+        }
+
+        if ($shortcut->user_id !== $request->user()->id) {
+            abort(403, 'Unauthorized action.');
         }
 
         if ($request->has('url')) {
@@ -191,17 +182,31 @@ class ShortcutController extends Controller
     public function destroyShortcut(Request $request, Shortcut $shortcut): RedirectResponse
     {
         if ($shortcut->user_id === null) {
-            if ($request->user()->role !== 'admin') {
-                abort(403, 'Unauthorized action.');
-            }
-        } else {
-            if ($shortcut->user_id !== $request->user()->id) {
-                abort(403, 'Unauthorized action.');
-            }
+            abort(403, 'Global shortcuts cannot be deleted by users.');
+        }
+
+        if ($shortcut->user_id !== $request->user()->id) {
+            abort(403, 'Unauthorized action.');
         }
 
         $shortcut->delete();
 
         return redirect()->route('dashboard')->with('status', 'shortcut-deleted');
+    }
+
+    public function reorder(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'shortcut_ids' => 'required|array',
+            'shortcut_ids.*' => 'exists:shortcuts,id',
+        ]);
+
+        $user = $request->user();
+
+        foreach ($request->shortcut_ids as $position => $shortcutId) {
+            $user->shortcuts()->updateExistingPivot($shortcutId, ['position' => $position]);
+        }
+
+        return redirect()->back()->with('status', 'order-updated');
     }
 }

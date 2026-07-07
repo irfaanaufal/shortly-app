@@ -37,9 +37,8 @@ class ProfileController extends Controller
         }
 
         if ($request->hasFile('profile_photo')) {
-            // Delete old photo if exists
-            if ($user->profile_photo_path) {
-                $oldPath = public_path($user->profile_photo_path);
+            if ($user->avatar_path) {
+                $oldPath = public_path($user->avatar_path);
                 if (file_exists($oldPath)) {
                     @unlink($oldPath);
                 }
@@ -49,10 +48,9 @@ class ProfileController extends Controller
             $extension = strtolower($file->getClientOriginalExtension());
             $filename = \Illuminate\Support\Str::random(40) . '.' . $extension;
 
-            // Simpan langsung di dalam folder public/profile-photos agar tidak butuh symlink storage:link
             $file->move(public_path('profile-photos'), $filename);
-            
-            $user->profile_photo_path = 'profile-photos/' . $filename;
+
+            $user->avatar_path = 'profile-photos/' . $filename;
         }
 
         $user->save();

@@ -2,171 +2,19 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm, usePage, router, Link } from '@inertiajs/react';
 import * as Icons from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { SortableContext, useSortable, arrayMove } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 const PRESET_ICONS = [
-    'Link2', 'Users', 'DollarSign', 'LifeBuoy', 'BookOpen', 'GraduationCap',
-    'MessageSquare', 'Globe', 'Settings', 'Briefcase', 'Calendar', 'Mail',
-    'Shield', 'Activity', 'Database', 'Code', 'Terminal', 'Cloud', 'Server',
-    'FileText', 'Folder', 'Cpu', 'TrendingUp', 'Heart', 'HelpCircle',
-    'Home', 'Search', 'Bell', 'Star', 'Layout', 'Grid', 'List', 'Layers',
-    'PieChart', 'BarChart3', 'LineChart', 'GitBranch', 'GitCommit', 'GitPullRequest',
-    'Lock', 'Unlock', 'Key', 'User', 'UserPlus', 'UserMinus', 'UserCheck', 'UsersRound',
-    'Building', 'Building2', 'Factory', 'MapPin', 'Navigation2', 'Compass', 'Target',
-    'Award', 'Trophy', 'Gift', 'Package', 'ShoppingCart', 'CreditCard', 'Banknote',
-    'Wallet', 'Coin', 'Receipt', 'File', 'FileJson', 'FileSpreadsheet', 'FileCheck',
-    'ClipboardList', 'ClipboardCheck', 'ScrollText', 'BookOpenCheck', 'Bookmark',
-    'Share2', 'Share', 'Download', 'Upload', 'Send', 'Forward', 'Reply', 'ReplyAll',
-    'Inbox', 'Mailbox', 'AtSign', 'Phone', 'Smartphone', 'Tablet', 'Monitor', 'Tv',
-    'Printer', 'Headphones', 'Music', 'Video', 'Camera', 'Image', 'Mic', 'MicOff',
-    'Volume2', 'VolumeX', 'Play', 'Pause', 'FastForward', 'Rewind', 'Repeat', 'Shuffle',
-    'Sun', 'Moon', 'CloudRain', 'CloudLightning', 'Snowflake', 'Zap', 'Flame',
-    'Droplets', 'Leaf', 'TreePine', 'Sprout', 'Anchor', 'Ship', 'Car', 'Bike',
-    'Plane', 'Train', 'Bus', 'Truck', 'Gauge', 'Speedometer', 'Thermometer',
-    'Clock', 'Hourglass', 'Timer', 'AlarmClock', 'CalendarCheck', 'CalendarDays',
-    'CalendarPlus', 'CalendarMinus', 'CalendarX', 'Check', 'CheckCircle', 'CheckSquare',
-    'X', 'XCircle', 'AlertCircle', 'AlertTriangle', 'Info', 'HelpCircle', 'Question',
-    'ExternalLink', 'ArrowUpRight', 'ArrowDownRight', 'ArrowUpLeft', 'ArrowDownLeft',
-    'ChevronUp', 'ChevronDown', 'ChevronLeft', 'ChevronRight', 'ArrowUp', 'ArrowDown',
-    'ArrowLeft', 'ArrowRight', 'Move', 'Maximize2', 'Minimize2', 'Expand', 'Shrink',
-    'RefreshCw', 'RefreshCcw', 'RotateCw', 'RotateCcw', 'Repeat1', 'Rotate3D',
-    'ZoomIn', 'ZoomOut', 'SearchCheck', 'SearchX', 'Filter', 'FilterX', 'SortAsc',
-    'SortDesc', 'SlidersHorizontal', 'Settings2', 'AdjustmentsHorizontal', 'Tool',
-    'Wrench', 'Hammer', 'Screwdriver', 'Wand2', 'Sparkles', 'Magic', 'TrendingDown',
-    'TrendingUp', 'Minus', 'Plus', 'MinusCircle', 'PlusCircle', 'MinusSquare',
-    'PlusSquare', 'Divide', 'Percent', 'Hash', 'AtSign', 'Asterisk', 'Hashtag',
-    'Type', 'Bold', 'Italic', 'Underline', 'Strikethrough', 'Code2', 'Quote',
-    'ListOrdered', 'ListUnordered', 'Indent', 'Outdent', 'AlignLeft', 'AlignCenter',
-    'AlignRight', 'AlignJustify', 'Highlighter', 'Eraser', 'Scissors', 'Copy',
-    'Paste', 'Cut', 'Undo2', 'Redo2', 'Save', 'SaveAll', 'FolderOpen', 'FolderPlus',
-    'FolderMinus', 'FolderX', 'FileEdit', 'FilePlus', 'FileMinus', 'FileX',
-    'FileSearch', 'FileWarning', 'FileQuestion', 'FileCheck2', 'FileX2', 'FileSymlink',
-    'FileLock', 'FileKey', 'FileVolume2', 'FileMusic', 'FileVideo', 'FileImage',
-    'FileCog', 'FileSpreadsheet2', 'FileText2', 'FileJson2', 'FileOutput', 'FileInput',
-    'DatabaseZap', 'DatabaseBackup', 'DatabaseSearch', 'DatabaseCheck', 'DatabaseX',
-    'ServerOff', 'ServerCrash', 'CloudUpload', 'CloudDownload', 'CloudCog',
-    'CloudRainWind', 'CloudLightningRain', 'CloudSun', 'CloudMoon', 'SunMedium',
-    'MoonStar', 'Sunrise', 'Sunset', 'SunDim', 'Sun', 'Moon', 'CloudFog',
-    'CloudHail', 'CloudSnow', 'Tornado', 'Umbrella', 'ThermometerSun', 'ThermometerSnowflake',
-    'Wind', 'Cloud', 'Droplet', 'Droplets', 'SprayCan', 'FlaskConical', 'FlaskRound',
-    'FlaskConicalOff', 'FlaskConicalOpen', 'FlaskRoundOff', 'FlaskRoundOpen',
-    'TestTube', 'TestTube2', 'Microscope', 'Telescope', 'Binoculars', 'CameraOff',
-    'VideoOff', 'Video', 'MicOff', 'Mic', 'HeadphonesOff', 'Headphones',
-    'Speaker', 'SpeakerOff', 'SpeakerX', 'Volume1', 'Volume2', 'VolumeX',
-    'Music2', 'Disc', 'Radio', 'MonitorSpeaker', 'Tv2', 'TvOff', 'MonitorOff',
-    'SmartphoneOff', 'SmartphoneCharging', 'Battery', 'BatteryFull', 'BatteryLow',
-    'BatteryMedium', 'BatteryCharging', 'BatteryWarning', 'BatteryOff', 'Plug',
-    'PlugZap', 'Power', 'PowerOff', 'SwitchCamera', 'Maximize', 'Minimize',
-    'Fullscreen', 'FullscreenExit', 'AspectRatio', 'AspectRatioPortrait', 'AspectRatioLandscape',
-    'Crop', 'CropUnset', 'ImageOff', 'ImageMinus', 'ImagePlus', 'ImagePlay',
-    'GalleryHorizontal', 'GalleryVertical', 'Slideshow', 'Panorama', 'LocateFixed',
-    'LocateOff', 'Locate', 'Navigation', 'Navigation2Off', 'Map', 'MapPinOff',
-    'MapPinned', 'MapCheck', 'MapX', 'Route', 'RouteX', 'Compass', 'CompassOff',
-    'Anchor', 'Ship2', 'Sailboat', 'CarOff', 'CarFront', 'CarDoorOpen',
-    'Fuel', 'GaugeHigh', 'GaugeLow', 'GaugeMedium', 'Luggage', 'WashingMachine',
-    'Refrigerator', 'Oven', 'Microwave', 'Stove', 'Utensils', 'Coffee', 'Cafe',
-    'Cookie', 'IceCream', 'Apple', 'Pizza', 'Sandwich', 'Beer', 'Wine',
-    'Soda', 'Water', 'GlassWater', 'Mug', 'Package2', 'Box', 'BoxSelect',
-    'Truck2', 'TruckFront', 'TruckPlane', 'PlaneLanding', 'PlaneTakeoff', 'PlaneOff',
-    'TrainFront', 'TrainTrack', 'BusFront', 'Bike2', 'BikeOff', 'Motorbike',
-    'Scooter', 'Unicycle', 'Helicopter', 'Rocket', 'Satellite', 'SatelliteDish',
-    'Signal', 'Wifi', 'WifiOff', 'CellTower', 'RadioTower', 'Bluetooth', 'BluetoothOff',
-    'Usb', 'HdmiPort', 'TypeC', 'TypeA', 'TypeB', 'EthernetPort', 'PhoneCall',
-    'PhoneIncoming', 'PhoneOutgoing', 'PhoneMissed', 'PhoneOff', 'Voicemail', 'MessageCircle',
-    'MessageCirclePlus', 'MessageSquarePlus', 'MessageSquareDashed', 'MessageSquareHeart',
-    'MessageSquareCheck', 'MessageSquareX', 'MessagesSquare', 'MailCheck', 'MailOpen',
-    'MailQuestion', 'MailWarning', 'MailX', 'Inbox2', 'InboxArchive', 'Send2',
-    'Share2', 'Share', 'Forward2', 'Reply2', 'ReplyAll2', 'Forward2', 'Send',
-    'MessageCircleHeart', 'MessageCircleWarning', 'MessageCircleDashed', 'MessageCircleCheck',
-    'MessageCircleX', 'MessageCirclePlus', 'MessageCircleMinus', 'MessageCircleEdit',
-    'MessageCircleCode', 'MessageCircleLock', 'MessageCircleUnlock', 'MessageCircleSearch',
-    'MessageCircleSettings', 'MessageSquareHeart', 'MessageSquareWarning', 'MessageSquareDashed',
-    'MessageSquareCheck', 'MessageSquareX', 'MessageSquarePlus', 'MessageSquareMinus',
-    'MessageSquareEdit', 'MessageSquareCode', 'MessageSquareLock', 'MessageSquareUnlock',
-    'MessageSquareSearch', 'MessageSquareSettings', 'Heart2', 'HeartOff', 'HeartPulse',
-    'StarOff', 'StarHalf', 'Star', 'StarPlus', 'StarMinus', 'StarX', 'Award',
-    'Trophy', 'Medal', 'Badge', 'BadgeCheck', 'BadgeX', 'BadgeMinus', 'BadgePlus',
-    'BadgePercent', 'BadgeDollarSign', 'BadgeJapaneseYen', 'BadgeSwissFranc', 'BadgeIndianRupee',
-    'BadgeBrazilianReal', 'BadgeEuro', 'BadgePoundSterling', 'BadgeRussianRuble', 'BadgeTurkishLira',
-    'BadgeArabicDinar', 'BadgeBangladeshiTaka', 'BadgeBitcoin', 'BadgeNaira', 'BadgeNorwegianKrone',
-    'BadgeSwedishKrona', 'BadgeCanadianDollar', 'BadgeAustralianDollar', 'BadgeNewTaiwanDollar',
-    'BadgeKoreanWon', 'BadgeChineseYuan', 'BadgeSriLankanRupee', 'BadgeUzbekistanSom',
-    'BadgePhilippinePeso', 'BadgeVietnameseDong', 'BadgeArmenianDram', 'BadgeAzerbaijaniManat',
-    'BadgeGeorgianLari', 'BadgeKyrgyzstaniSom', 'BadgeKazakhstaniTenge', 'BadgeTajikistaniSomoni',
-    'BadgeTurkmenistaniManat', 'BadgeUkrainianHryvnia', 'BadgeUruguayanPeso', 'BadgeArgentinePeso',
-    'BadgeChileanPeso', 'BadgeColombianPeso', 'BadgePeruvianSol', 'BadgeVenezuelanBolívar',
-    'BadgeMexicanPeso', 'BadgeCubanPeso', 'BadgeDominicanPeso', 'BadgeHaitianGourde',
-    'BadgeJamaicanDollar', 'BadgeBarbadianDollar', 'BadgeTrinidadAndTobagoDollar',
-    'BadgeCaymanIslandsDollar', 'BadgeBahamianDollar', 'BadgeBermudianDollar',
-    'BadgeBritishVirginIslandsDollar', 'BadgeUnitedStatesVirginIslandsDollar',
-    'BadgeEasternCaribbeanDollar', 'BadgeArubanFlorin', 'BadgeNetherlandsAntilleanGuilder',
-    'BadgeCuraçaoanGuilder', 'BadgeSintMaartenianGuilder', 'BadgeBonaireanFlorin',
-    'BadgeSabaFlorin', 'BadgeSaintEustatiusFlorin', 'BadgeSaintMaartenianGuilder',
-    'BadgeTurksAndCaicosIslandsDollar', 'BadgeFalklandIslandsPound', 'BadgeSaintHelenaPound',
-    'BadgeGibraltarPound', 'BadgeBritishIndianOceanTerritoryRupee', 'BadgeChristmasIslandDollar',
-    'BadgeCocosIslandsDollar', 'BadgeNorfolkIslandDollar', 'BadgeNiueDollar', 'BadgePitcairnIslandsDollar',
-    'BadgeTokelauDollar', 'BadgeTuvaluDollar', 'BadgeWallisAndFutunaDollar', 'BadgeFrenchPolynesianFranc',
-    'BadgeNewCaledonianFranc', 'BadgeVanuatuVatu', 'BadgeSolomonIslandsDollar', 'BadgeFijianDollar',
-    'BadgeSamoanTala', 'BadgeTonganPaanga', 'BadgeMarshallIslandsDollar', 'BadgeMicronesianDollar',
-    'BadgePalauanDollar', 'BadgeNauruanDollar', 'BadgeKiribatiDollar', 'BadgeTuvaluanDollar',
-    'BadgeFijianDollar', 'BadgeSolomonIslandsDollar', 'BadgeVanuatuVatu', 'BadgeNewCaledonianFranc',
-    'BadgeFrenchPolynesianFranc', 'BadgeWallisAndFutunaDollar', 'BadgeTokelauDollar',
-    'BadgeNiueDollar', 'BadgeNorfolkIslandDollar', 'BadgeCocosIslandsDollar', 'BadgeChristmasIslandDollar',
-    'BadgeBritishIndianOceanTerritoryRupee', 'BadgeGibraltarPound', 'BadgeSaintHelenaPound',
-    'BadgeFalklandIslandsPound', 'BadgeTurksAndCaicosIslandsDollar', 'BadgeSaintMaartenianGuilder',
-    'BadgeSabaFlorin', 'BadgeSaintEustatiusFlorin', 'BadgeCuraçaoanGuilder', 'BadgeArubanFlorin',
-    'BadgeEasternCaribbeanDollar', 'BadgeUnitedStatesVirginIslandsDollar', 'BadgeBritishVirginIslandsDollar',
-    'BadgeCaymanIslandsDollar', 'BadgeBahamianDollar', 'BadgeBermudianDollar', 'BadgeBarbadianDollar',
-    'BadgeJamaicanDollar', 'BadgeHaitianGourde', 'BadgeDominicanPeso', 'BadgeCubanPeso',
-    'BadgeMexicanPeso', 'BadgeVenezuelanBolívar', 'BadgePeruvianSol', 'BadgeColombianPeso',
-    'BadgeChileanPeso', 'BadgeArgentinePeso', 'BadgeUruguayanPeso', 'BadgeUkrainianHryvnia',
-    'BadgeTurkmenistaniManat', 'BadgeTajikistaniSomoni', 'BadgeKazakhstaniTenge', 'BadgeKyrgyzstaniSom',
-    'BadgeGeorgianLari', 'BadgeAzerbaijaniManat', 'BadgeArmenianDram', 'BadgePhilippinePeso',
-    'BadgeVietnameseDong', 'BadgeSriLankanRupee', 'BadgeChineseYuan', 'BadgeKoreanWon',
-    'BadgeNewTaiwanDollar', 'BadgeAustralianDollar', 'BadgeCanadianDollar', 'BadgeSwedishKrona',
-    'BadgeNorwegianKrone', 'BadgeNaira', 'BadgeBitcoin', 'BadgeBangladeshiTaka', 'BadgeArabicDinar',
-    'BadgeTurkishLira', 'BadgeRussianRuble', 'BadgePoundSterling', 'BadgeEuro', 'BadgeBrazilianReal',
-    'BadgeIndianRupee', 'BadgeSwissFranc', 'BadgeJapaneseYen', 'BadgeDollarSign', 'BadgePercent',
-    'BadgeMinus', 'BadgePlus', 'BadgeX', 'BadgeCheck', 'BadgeAlert', 'BadgeInfo', 'BadgeHelp',
-    'BadgeArrowUp', 'BadgeArrowDown', 'BadgeArrowLeft', 'BadgeArrowRight', 'BadgeArrowUpRight',
-    'BadgeArrowDownRight', 'BadgeArrowUpLeft', 'BadgeArrowDownLeft', 'BadgeChevronUp', 'BadgeChevronDown',
-    'BadgeChevronLeft', 'BadgeChevronRight', 'BadgeMenu', 'BadgeGrid', 'BadgeList', 'BadgeLayers',
-    'BadgeColumns', 'BadgeLayout', 'BadgeFile', 'BadgeFolder', 'BadgeImage', 'BadgeVideo',
-    'BadgeAudio', 'BadgeMail', 'BadgeMessage', 'BadgePhone', 'BadgeSmartphone', 'BadgeTablet',
-    'BadgeMonitor', 'BadgeTv', 'BadgePrinter', 'BadgeHeadphones', 'BadgeCamera', 'BadgeMic',
-    'BadgeVolume', 'BadgePlay', 'BadgePause', 'BadgeStop', 'BadgeRewind', 'BadgeFastForward',
-    'BadgeRepeat', 'BadgeShuffle', 'BadgeSkipForward', 'BadgeSkipBack', 'BadgeRefresh', 'BadgeRotate',
-    'BadgeZoomIn', 'BadgeZoomOut', 'BadgeFilter', 'BadgeSearch', 'BadgeCheck', 'BadgeX',
-    'BadgePlus', 'BadgeMinus', 'BadgeStar', 'BadgeHeart', 'BadgeBookmark', 'BadgeFlag',
-    'BadgePin', 'BadgeAnchor', 'BadgeLink', 'BadgeExternalLink', 'BadgeShare', 'BadgeSave',
-    'BadgeDownload', 'BadgeUpload', 'BadgeClipboard', 'BadgeCopy', 'BadgeCut', 'BadgePaste',
-    'BadgeUndo', 'BadgeRedo', 'BadgeEdit', 'BadgeEraser', 'BadgeHighlighter', 'BadgeType',
-    'BadgeBold', 'BadgeItalic', 'BadgeUnderline', 'BadgeStrikethrough', 'BadgeCode', 'BadgeQuote',
-    'BadgeListOrdered', 'BadgeListUnordered', 'BadgeIndent', 'BadgeOutdent', 'BadgeAlignLeft',
-    'BadgeAlignCenter', 'BadgeAlignRight', 'BadgeAlignJustify', 'BadgeSliders', 'BadgeSettings',
-    'BadgeTool', 'BadgeWrench', 'BadgeHammer', 'BadgeScrewdriver', 'BadgeWand', 'BadgeSparkles',
-    'BadgeMagic', 'BadgeTrendingUp', 'BadgeTrendingDown', 'BadgePieChart', 'BadgeBarChart',
-    'BadgeLineChart', 'BadgeActivity', 'BadgeGitBranch', 'BadgeGitCommit', 'BadgeGitPullRequest',
-    'BadgeLock', 'BadgeUnlock', 'BadgeKey', 'BadgeUser', 'BadgeUsers', 'BadgeUserPlus',
-    'BadgeUserMinus', 'BadgeUserCheck', 'BadgeUserX', 'BadgeUserLock', 'BadgeUserUnlock',
-    'BadgeUserSearch', 'BadgeUserSettings', 'BadgeUserEdit', 'BadgeBuilding', 'BadgeFactory',
-    'BadgeMapPin', 'BadgeNavigation', 'BadgeCompass', 'BadgeTarget', 'BadgeAward', 'BadgeTrophy',
-    'BadgeGift', 'BadgePackage', 'BadgeShoppingCart', 'BadgeCreditCard', 'BadgeBanknote',
-    'BadgeWallet', 'BadgeCoin', 'BadgeReceipt', 'BadgeFileText', 'BadgeFileJson',
-    'BadgeFileSpreadsheet', 'BadgeFileCheck', 'BadgeClipboardList', 'BadgeClipboardCheck',
-    'BadgeScrollText', 'BadgeBookOpen', 'BadgeBookOpenCheck', 'BadgeBookmark', 'BadgeShare2',
-    'BadgeShare', 'BadgeDownload', 'BadgeUpload', 'BadgeSend', 'BadgeForward', 'BadgeReply',
-    'BadgeReplyAll', 'BadgeInbox', 'BadgeMailbox', 'BadgeAtSign', 'BadgePhone', 'BadgeSmartphone',
-    'BadgeTablet', 'BadgeMonitor', 'BadgeTv', 'BadgePrinter', 'BadgeHeadphones', 'BadgeMusic',
-    'BadgeVideo', 'BadgeCamera', 'BadgeImage', 'BadgeMic', 'BadgeMicOff', 'BadgeVolume2',
-    'BadgeVolumeX', 'BadgePlay', 'BadgePause', 'BadgeFastForward', 'BadgeRewind', 'BadgeRepeat',
-    'BadgeShuffle', 'BadgeSun', 'BadgeMoon', 'BadgeCloudRain', 'BadgeCloudLightning',
-    'BadgeSnowflake', 'BadgeZap', 'BadgeFlame', 'BadgeDroplets', 'BadgeLeaf', 'BadgeTreePine',
-    'BadgeSprout', 'BadgeAnchor', 'BadgeShip', 'BadgeCar', 'BadgeBike', 'BadgePlane',
-    'BadgeTrain', 'BadgeBus', 'BadgeTruck', 'BadgeGauge', 'BadgeSpeedometer', 'BadgeThermometer',
-    'BadgeClock', 'BadgeHourglass', 'BadgeTimer', 'BadgeAlarmClock', 'BadgeCalendarCheck',
-    'BadgeCalendarDays', 'BadgeCalendarPlus', 'BadgeCalendarMinus', 'BadgeCalendarX',
-    'BadgeCheck', 'BadgeCheckCircle', 'BadgeCheckSquare', 'BadgeX', 'BadgeXCircle',
-    'BadgeAlertCircle', 'BadgeAlertTriangle', 'BadgeInfo', 'BadgeHelpCircle', 'BadgeQuestion'
+    'Link2', 'Globe', 'Home', 'Search', 'Bell', 'Star', 'Bookmark', 'Shield',
+    'Briefcase', 'Building', 'Users', 'User', 'Settings', 'FileText', 'Folder', 'ClipboardList',
+    'DollarSign', 'CreditCard', 'Wallet', 'ShoppingCart', 'Receipt', 'TrendingUp',
+    'Image', 'Video', 'Music', 'Camera', 'Headphones', 'Mic', 'Play',
+    'Code', 'Terminal', 'Database', 'Cloud', 'Server', 'Cpu', 'Wifi', 'Monitor',
+    'Mail', 'MessageSquare', 'Phone', 'Send', 'Share2',
+    'Calendar', 'Clock', 'CalendarCheck', 'Timer',
+    'PieChart', 'BarChart3', 'LineChart', 'Activity',
 ];
 
 const PRESET_COLORS = [
@@ -216,11 +64,58 @@ const DynamicIcon = ({ name, className }) => {
     return <IconComponent className={className} />;
 };
 
+function SortableShortcut({ shortcut, isChecked, onToggle, isEditable, onDelete }) {
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: shortcut.id });
+    const style = { transform: CSS.Transform.toString(transform), transition, zIndex: isDragging ? 50 : undefined, opacity: isDragging ? 0.8 : 1 };
+    const isGlobal = shortcut.user_id === null;
+
+    return (
+        <div ref={setNodeRef} style={style} {...attributes} onClick={() => onToggle(shortcut.id)} className={`relative flex items-start text-left gap-3.5 p-4 pl-7 rounded-xl border transition-all cursor-pointer select-none ${isChecked ? 'border-neutral-900 bg-neutral-50 dark:border-white dark:bg-[#2d2d2d] ring-1 ring-neutral-900 dark:ring-white' : 'border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1e1e1e] hover:bg-neutral-50 dark:hover:bg-[#2d2d2d]/50'} ${isDragging ? 'shadow-lg' : ''}`}>
+            <div {...listeners} onClick={(e) => e.stopPropagation()} className="absolute top-4 left-1.5 cursor-grab active:cursor-grabbing text-neutral-300 dark:text-neutral-600 hover:text-neutral-500 dark:hover:text-neutral-400 transition-colors" title="Seret untuk mengatur urutan">
+                <Icons.GripVertical className="w-4 h-4" />
+            </div>
+            <span className={`absolute top-4 right-4 w-4 h-4 rounded flex items-center justify-center border transition-all ${isChecked ? 'bg-neutral-900 border-neutral-900 text-white dark:bg-white dark:border-white dark:text-neutral-900' : 'border-neutral-300 dark:border-neutral-700 bg-transparent'}`}>
+                <Icons.Check className={`w-3 h-3 stroke-[3] transition-opacity ${isChecked ? 'opacity-100' : 'opacity-0'}`} />
+            </span>
+            <div className={`flex items-center justify-center w-11 h-11 rounded-lg bg-gradient-to-tr ${shortcut.color} text-white border border-transparent shadow-sm shrink-0`}>
+                <DynamicIcon name={shortcut.icon} className="w-5 h-5" />
+            </div>
+            <div className={`pr-5 min-w-0 flex-1 ${isEditable && !isGlobal ? 'pb-6' : ''}`}>
+                <div className="flex items-center gap-1.5">
+                    <p className="text-xs font-bold text-neutral-800 dark:text-neutral-50 truncate">{shortcut.name}</p>
+                    {isGlobal && (
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 shrink-0">
+                            Global
+                        </span>
+                    )}
+                </div>
+                {shortcut.description && (<p className="text-[11px] text-neutral-400 dark:text-neutral-400 mt-0.5 line-clamp-2 leading-relaxed">{shortcut.description}</p>)}
+                <a href={shortcut.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-[10px] font-mono text-neutral-400 dark:text-neutral-400 truncate mt-1.5 bg-neutral-50 dark:bg-[#2d2d2d] px-1.5 py-0.5 rounded border border-neutral-200/50 dark:border-neutral-700 inline-block max-w-full hover:text-neutral-600 dark:hover:text-neutral-300 hover:underline">{shortcut.url}</a>
+            </div>
+            {isEditable && !isGlobal && (
+                <div className="absolute bottom-4 right-4 flex items-center gap-1.5">
+                    <Link href={route('shortcuts.edit', shortcut.id)} onClick={(e) => e.stopPropagation()} className="p-1.5 rounded-lg bg-neutral-50 dark:bg-[#2d2d2d] text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-200 dark:hover:bg-[#1e1e1e] border border-neutral-200 dark:border-neutral-700 transition-all active:scale-90" title="Edit Shortcut"><Icons.Pencil className="w-3 h-3" /></Link>
+                    <button type="button" onClick={(e) => { e.stopPropagation(); onDelete(shortcut.id); }} className="p-1.5 rounded-lg bg-neutral-50 dark:bg-[#2d2d2d] text-red-600 dark:text-red-400 hover:text-white dark:hover:text-red-200 hover:bg-red-600 dark:hover:bg-red-950 border border-neutral-200 dark:border-neutral-700 hover:border-red-650 transition-all active:scale-90" title="Hapus Shortcut"><Icons.Trash className="w-3 h-3" /></button>
+                </div>
+            )}
+        </div>
+    );
+}
+
 export default function Dashboard({ shortcuts = [], userShortcuts = [] }) {
     const { auth } = usePage().props;
     const [copied, setCopied] = useState(false);
+    const [orderedShortcuts, setOrderedShortcuts] = useState(shortcuts);
+    const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
+
+    useEffect(() => { setOrderedShortcuts(shortcuts); }, [shortcuts]);
 
     const handleDelete = (shortcutId) => {
+        const shortcut = shortcuts.find(s => s.id === shortcutId);
+        if (shortcut && shortcut.user_id === null) {
+            alert('Shortcut global tidak bisa dihapus. Hanya admin yang bisa menghapus shortcut global.');
+            return;
+        }
         if (confirm('Apakah Anda yakin ingin menghapus shortcut ini secara permanen dari seluruh sistem?')) {
             router.delete(route('shortcuts.destroy', shortcutId), {
                 preserveScroll: true,
@@ -322,6 +217,19 @@ export default function Dashboard({ shortcuts = [], userShortcuts = [] }) {
         });
     };
 
+    const handleDragEnd = (event) => {
+        const { active, over } = event;
+        if (active.id !== over?.id) {
+            setOrderedShortcuts((items) => {
+                const oldIndex = items.findIndex((i) => i.id === active.id);
+                const newIndex = items.findIndex((i) => i.id === over.id);
+                const newItems = arrayMove(items, oldIndex, newIndex);
+                router.put(route('shortcuts.reorder'), { shortcut_ids: newItems.map((i) => i.id) }, { preserveScroll: true });
+                return newItems;
+            });
+        }
+    };
+
     const activeCount = shortcutsForm.data.shortcut_ids.length;
 
     return (
@@ -333,7 +241,7 @@ export default function Dashboard({ shortcuts = [], userShortcuts = [] }) {
 
 
 
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+                <div className="w-full max-w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6">
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
 
                         {/* Left Column */}
@@ -416,16 +324,9 @@ export default function Dashboard({ shortcuts = [], userShortcuts = [] }) {
                                 <div>
                                     <h2 className="text-sm font-bold text-neutral-900 dark:text-neutral-50 flex items-center gap-2">
                                         Pustaka Shortcut Aplikasi
-                                        {auth.user.role === 'admin' && (
-                                            <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 bg-neutral-950 dark:bg-neutral-800 text-white dark:text-neutral-100 border border-neutral-900 dark:border-neutral-700 rounded">
-                                                Admin Mode
-                                            </span>
-                                        )}
                                     </h2>
                                     <p className="text-xs text-neutral-400 dark:text-neutral-400 mt-0.5">
-                                        {auth.user.role === 'admin'
-                                            ? 'Kelola pustaka shortcut sistem atau pilih untuk grid pribadi Anda.'
-                                            : 'Buat shortcut kustom pribadi Anda atau sematkan pintasan bawaan.'}
+                                        Buat shortcut kustom pribadi Anda atau sematkan pintasan bawaan.
                                     </p>
                                 </div>
                                 <div className="flex items-center gap-2 self-start sm:self-auto">
@@ -443,72 +344,22 @@ export default function Dashboard({ shortcuts = [], userShortcuts = [] }) {
                             </div>
 
                             <div className="bg-white dark:bg-[#1e1e1e] border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-sm space-y-5">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                                    {shortcuts.map((shortcut) => {
-                                        const isChecked = shortcutsForm.data.shortcut_ids.includes(shortcut.id);
-                                        const isEditable = (shortcut.user_id === null && auth.user.role === 'admin') || (shortcut.user_id !== null);
-                                        return (
-                                            <button
-                                                key={shortcut.id}
-                                                type="button"
-                                                onClick={() => handleShortcutToggle(shortcut.id)}
-                                                className={`relative flex items-start text-left gap-3.5 p-4 rounded-xl border transition-all ${isChecked
-                                                    ? 'border-neutral-900 bg-neutral-50 dark:border-white dark:bg-[#2d2d2d] ring-1 ring-neutral-900 dark:ring-white'
-                                                    : 'border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1e1e1e] hover:bg-neutral-50 dark:hover:bg-[#2d2d2d]/50'
-                                                    }`}
-                                            >
-                                                {/* Checkbox Square Monochrome */}
-                                                <span className={`absolute top-4 right-4 w-4 h-4 rounded flex items-center justify-center border transition-all ${isChecked
-                                                    ? 'bg-neutral-900 border-neutral-900 text-white dark:bg-white dark:border-white dark:text-neutral-900'
-                                                    : 'border-neutral-300 dark:border-neutral-700 bg-transparent'
-                                                    }`}>
-                                                    <Icons.Check className={`w-3 h-3 stroke-[3] transition-opacity ${isChecked ? 'opacity-100' : 'opacity-0'}`} />
-                                                </span>
-
-                                                {/* Solid Gradient Icon Box */}
-                                                <div className={`flex items-center justify-center w-11 h-11 rounded-lg bg-gradient-to-tr ${shortcut.color} text-white border border-transparent shadow-sm shrink-0`}>
-                                                    <DynamicIcon name={shortcut.icon} className="w-5 h-5" />
-                                                </div>
-
-                                                <div className={`pr-5 min-w-0 flex-1 ${isEditable ? 'pb-6' : ''}`}>
-                                                    <p className="text-xs font-bold text-neutral-800 dark:text-neutral-50 truncate">
-                                                        {shortcut.name}
-                                                    </p>
-                                                    {shortcut.description && (
-                                                        <p className="text-[11px] text-neutral-400 dark:text-neutral-400 mt-0.5 line-clamp-2 leading-relaxed">
-                                                            {shortcut.description}
-                                                        </p>
-                                                    )}
-                                                    <p className="text-[10px] font-mono text-neutral-400 dark:text-neutral-400 truncate mt-1.5 bg-neutral-50 dark:bg-[#2d2d2d] px-1.5 py-0.5 rounded border border-neutral-200/50 dark:border-neutral-700 inline-block max-w-full">
-                                                        {shortcut.url}
-                                                    </p>
-                                                </div>
-
-                                                {/* Controls: Edit and Delete */}
-                                                {isEditable && (
-                                                    <div className="absolute bottom-4 right-4 flex items-center gap-1.5">
-                                                        <Link
-                                                            href={route('shortcuts.edit', shortcut.id)}
-                                                            onClick={(e) => e.stopPropagation()}
-                                                            className="p-1.5 rounded-lg bg-neutral-50 dark:bg-[#2d2d2d] text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-200 dark:hover:bg-[#1e1e1e] border border-neutral-200 dark:border-neutral-700 transition-all active:scale-90"
-                                                            title="Edit Shortcut"
-                                                        >
-                                                            <Icons.Pencil className="w-3 h-3" />
-                                                        </Link>
-                                                        <button
-                                                            type="button"
-                                                            onClick={(e) => handleDeleteClick(e, shortcut.id)}
-                                                            className="p-1.5 rounded-lg bg-neutral-50 dark:bg-[#2d2d2d] text-red-600 dark:text-red-400 hover:text-white dark:hover:text-red-200 hover:bg-red-600 dark:hover:bg-red-950 border border-neutral-200 dark:border-neutral-700 hover:border-red-650 transition-all active:scale-90"
-                                                            title="Hapus Shortcut"
-                                                        >
-                                                            <Icons.Trash className="w-3 h-3" />
-                                                        </button>
-                                                    </div>
-                                                )}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
+                                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                                    <SortableContext items={orderedShortcuts.map((s) => s.id)}>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                                            {orderedShortcuts.map((shortcut) => (
+                                                <SortableShortcut
+                                                    key={shortcut.id}
+                                                    shortcut={shortcut}
+                                                    isChecked={shortcutsForm.data.shortcut_ids.includes(shortcut.id)}
+                                                    onToggle={handleShortcutToggle}
+                                                    isEditable={true}
+                                                    onDelete={handleDelete}
+                                                />
+                                            ))}
+                                        </div>
+                                    </SortableContext>
+                                </DndContext>
 
                                 <form onSubmit={handleShortcutsSubmit} className="pt-2 border-t border-neutral-100 dark:border-neutral-800">
                                     <button

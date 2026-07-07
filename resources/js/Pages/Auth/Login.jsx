@@ -1,6 +1,7 @@
 import InputError from '@/Components/InputError';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
+import Swal from 'sweetalert2';
 
 export default function Login({ status, canResetPassword }) {
     const [isDesktop, setIsDesktop] = useState(typeof window !== 'undefined' ? window.innerWidth >= 768 : false);
@@ -17,6 +18,18 @@ export default function Login({ status, canResetPassword }) {
         remember: false,
     });
 
+    useEffect(() => {
+        if (errors.activation_needed) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Akun Belum Diaktifkan',
+                text: errors.activation_needed,
+                confirmButtonText: 'Hubungi Tim IT',
+                confirmButtonColor: '#6366f1',
+            });
+        }
+    }, [errors]);
+
     const submit = (e) => {
         e.preventDefault();
         post(route('login'), {
@@ -25,24 +38,11 @@ export default function Login({ status, canResetPassword }) {
     };
 
     return (
-        <div style={{
-            height: '100vh',
-            display: 'flex',
-            flexDirection: isDesktop ? 'row' : 'column',
-            backgroundColor: '#000000',
-            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-            overflow: 'hidden'
-        }}>
+        <div className={`h-screen flex ${isDesktop ? 'flex-row' : 'flex-col'} bg-black font-['-apple-system',_BlinkMacSystemFont,_'Segoe_UI',_sans-serif] overflow-hidden`}>
             <Head title="Log in" />
 
             {/* ===== BLACK SECTION (Desktop left / Mobile top) ===== */}
-            <div style={{
-                flex: isDesktop ? '1' : '0 0 35vh',
-                backgroundColor: '#000',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-            }}>
+            <div className={`${isDesktop ? 'flex-1' : 'shrink-0 h-[35vh]'} bg-black flex items-center justify-center`}>
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width={isDesktop ? 150 : 70}
@@ -59,52 +59,25 @@ export default function Login({ status, canResetPassword }) {
                 </svg>
             </div>
 
-            {/* ===== WHITE SECTION (Desktop right / Mobile bottom) ===== */}
-            <div style={{
-                flex: '1',
-                backgroundColor: '#fff',
-                display: 'flex',
-                alignItems: isDesktop ? 'center' : 'flex-start',
-                justifyContent: isDesktop ? 'center' : 'flex-start',
-                padding: isDesktop ? '0 80px' : '24px',
-                borderTopLeftRadius: isDesktop ? '0' : '48px',
-                overflowY: 'hidden'
-            }}>
-                <div style={{ width: '100%', maxWidth: isDesktop ? '400px' : 'none' }}>
-                    <h1 style={{
-                        fontSize: isDesktop ? '32px' : '24px',
-                        fontWeight: '700',
-                        color: '#111111',
-                        textAlign: 'center',
-                        margin: '0 0 ' + (isDesktop ? '32px' : '20px') + ' 0',
-                        letterSpacing: isDesktop ? '-0.5px' : '-0.3px',
-                    }}>
+            {/* ===== FORM SECTION (Desktop right / Mobile bottom) ===== */}
+            <div className={`flex-1 bg-white dark:bg-[#1e1e1e] flex ${isDesktop ? 'items-center justify-center px-20' : 'items-start justify-start px-6 pt-6'} ${!isDesktop ? 'rounded-tl-[48px]' : ''} overflow-y-hidden transition-colors duration-200`}>
+                <div className={`w-full ${isDesktop ? 'max-w-[400px]' : ''}`}>
+                    <h1 className={`${isDesktop ? 'text-[32px]' : 'text-2xl'} font-bold text-neutral-900 dark:text-white text-center ${isDesktop ? 'mb-8' : 'mb-5'} tracking-tight`}>
                         Login
                     </h1>
 
                     {status && (
-                        <div style={{
-                            marginBottom: isDesktop ? '20px' : '12px',
-                            fontSize: isDesktop ? '14px' : '13px',
-                            color: '#16a34a',
-                            fontWeight: 500
-                        }}>
+                        <div className={`${isDesktop ? 'mb-5' : 'mb-3'} text-sm font-medium text-green-600 dark:text-green-400`}>
                             {status}
                         </div>
                     )}
 
-                    <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', flex: isDesktop ? 'none' : '1 1 auto' }}>
+                    <form onSubmit={submit} className={`flex flex-col ${!isDesktop ? 'flex-1' : ''}`}>
                         {/* Username */}
-                        <div style={{ marginBottom: isDesktop ? '16px' : '12px' }}>
+                        <div className={isDesktop ? 'mb-4' : 'mb-3'}>
                             <label
                                 htmlFor="username"
-                                style={{
-                                    display: 'block',
-                                    fontSize: isDesktop ? '14px' : '13px',
-                                    fontWeight: '500',
-                                    color: '#111111',
-                                    marginBottom: isDesktop ? '8px' : '5px'
-                                }}
+                                className={`block ${isDesktop ? 'text-sm' : 'text-[13px]'} font-medium text-neutral-900 dark:text-white ${isDesktop ? 'mb-2' : 'mb-1'}`}
                             >
                                 Username
                             </label>
@@ -117,32 +90,16 @@ export default function Login({ status, canResetPassword }) {
                                 autoComplete="username"
                                 autoFocus
                                 onChange={(e) => setData('username', e.target.value)}
-                                style={{
-                                    width: '100%',
-                                    boxSizing: 'border-box',
-                                    border: '1px solid #e5e7eb',
-                                    borderRadius: '12px',
-                                    padding: isDesktop ? '12px 16px' : '10px 14px',
-                                    fontSize: isDesktop ? '15px' : '14px',
-                                    color: '#374151',
-                                    backgroundColor: '#ffffff',
-                                    outline: 'none',
-                                }}
+                                className={`w-full box-border border border-neutral-200 dark:border-neutral-700 rounded-xl ${isDesktop ? 'px-4 py-3 text-[15px]' : 'px-3.5 py-2.5 text-sm'} text-neutral-900 dark:text-white bg-white dark:bg-[#2d2d2d] outline-none focus:border-neutral-900 dark:focus:border-white focus:ring-1 focus:ring-neutral-900 dark:focus:ring-white transition-all placeholder-neutral-300 dark:placeholder-neutral-500`}
                             />
                             <InputError message={errors.username} className={isDesktop ? 'mt-2' : 'mt-1'} />
                         </div>
 
                         {/* Password */}
-                        <div style={{ marginBottom: '0px' }}>
+                        <div>
                             <label
                                 htmlFor="password"
-                                style={{
-                                    display: 'block',
-                                    fontSize: isDesktop ? '14px' : '13px',
-                                    fontWeight: '500',
-                                    color: '#111111',
-                                    marginBottom: isDesktop ? '8px' : '5px'
-                                }}
+                                className={`block ${isDesktop ? 'text-sm' : 'text-[13px]'} font-medium text-neutral-900 dark:text-white ${isDesktop ? 'mb-2' : 'mb-1'}`}
                             >
                                 Password
                             </label>
@@ -154,70 +111,38 @@ export default function Login({ status, canResetPassword }) {
                                 placeholder="Enter password"
                                 autoComplete="current-password"
                                 onChange={(e) => setData('password', e.target.value)}
-                                style={{
-                                    width: '100%',
-                                    boxSizing: 'border-box',
-                                    border: '1px solid #e5e7eb',
-                                    borderRadius: '12px',
-                                    padding: isDesktop ? '12px 16px' : '10px 14px',
-                                    fontSize: isDesktop ? '15px' : '14px',
-                                    color: '#374151',
-                                    backgroundColor: '#ffffff',
-                                    outline: 'none',
-                                }}
+                                className={`w-full box-border border border-neutral-200 dark:border-neutral-700 rounded-xl ${isDesktop ? 'px-4 py-3 text-[15px]' : 'px-3.5 py-2.5 text-sm'} text-neutral-900 dark:text-white bg-white dark:bg-[#2d2d2d] outline-none focus:border-neutral-900 dark:focus:border-white focus:ring-1 focus:ring-neutral-900 dark:focus:ring-white transition-all placeholder-neutral-300 dark:placeholder-neutral-500`}
                             />
                             <InputError message={errors.password} className={isDesktop ? 'mt-2' : 'mt-1'} />
                         </div>
 
-                        {/* Forget Password */}
-                        <div style={{ textAlign: 'right', margin: (isDesktop ? '8px 0 24px 0' : '6px 0 20px 0') }}>
+                        {/* Forgot Password */}
+                        <div className={`text-right ${isDesktop ? 'my-6' : 'my-4'}`}>
                             {canResetPassword && (
                                 <Link
                                     href={route('password.request')}
-                                    style={{
-                                        fontSize: isDesktop ? '13px' : '11px',
-                                        color: isDesktop ? '#6b7280' : '#9ca3af',
-                                        textDecoration: 'none'
-                                    }}
+                                    className={`${isDesktop ? 'text-[13px]' : 'text-[11px]'} text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors no-underline`}
                                 >
                                     Forgot Password?
                                 </Link>
                             )}
                         </div>
 
-                        {/* Tombol Login */}
+                        {/* Login Button */}
                         <button
                             type="submit"
                             disabled={processing}
-                            style={{
-                                width: '100%',
-                                backgroundColor: '#000000',
-                                color: '#ffffff',
-                                border: 'none',
-                                borderRadius: '12px',
-                                padding: isDesktop ? '14px 0' : '12px 0',
-                                fontSize: isDesktop ? '16px' : '15px',
-                                fontWeight: '600',
-                                cursor: processing ? 'not-allowed' : 'pointer',
-                                opacity: processing ? 0.6 : 1,
-                                letterSpacing: '0.3px',
-                            }}
+                            className={`w-full bg-black dark:bg-white dark:text-black text-white border-none rounded-xl ${isDesktop ? 'py-3.5 text-base' : 'py-3 text-[15px]'} font-semibold tracking-wide cursor-pointer transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed`}
                         >
                             Login
                         </button>
                     </form>
 
-                    <p style={{
-                        textAlign: 'center',
-                        fontSize: isDesktop ? '14px' : '12px',
-                        color: '#9ca3af',
-                        marginTop: isDesktop ? '28px' : '20px',
-                        marginBottom: '0'
-                    }}>
+                    <p className={`text-center ${isDesktop ? 'text-sm' : 'text-xs'} text-neutral-400 dark:text-neutral-500 ${isDesktop ? 'mt-7' : 'mt-5'} mb-0`}>
                         Don't have an account?{' '}
                         <Link
                             href={route('register')}
-                            style={{ color: '#111111', fontWeight: '700', textDecoration: 'none' }}
+                            className="text-neutral-900 dark:text-white font-bold no-underline hover:underline"
                         >
                             Sign Up
                         </Link>
