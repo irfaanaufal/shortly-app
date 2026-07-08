@@ -29,13 +29,13 @@ class ProfileUpdateRequest extends FormRequest
             'profile_photo' => [
                 'nullable',
                 'file',
-                'max:2048',
+                'max:3000',
                 function (string $attribute, mixed $value, \Closure $fail) {
                     if ($value instanceof \Illuminate\Http\UploadedFile) {
                         $extension = strtolower($value->getClientOriginalExtension());
-                        $allowedExtensions = ['jpeg', 'png', 'jpg', 'gif'];
+                        $allowedExtensions = ['jpeg', 'png', 'jpg', 'gif', 'webp'];
                         if (!in_array($extension, $allowedExtensions)) {
-                            $fail('Format file foto profil harus berupa jpeg, png, jpg, atau gif.');
+                            $fail('Format file foto profil harus berupa jpeg, png, jpg, gif, atau webp.');
                         }
                     }
                 },

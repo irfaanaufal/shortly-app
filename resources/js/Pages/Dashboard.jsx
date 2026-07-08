@@ -136,26 +136,7 @@ export default function Dashboard({ shortcuts = [], userShortcuts = [] }) {
         shortcut_ids: userShortcuts || [],
     });
 
-    const publicUrl = (() => {
-        if (typeof window === 'undefined') return '';
-        const origin = window.location.origin;
-        const path = window.location.pathname;
-        const pathLower = path.toLowerCase();
-
-        const publicIndex = pathLower.indexOf('/shortly-app/public/index.php');
-        if (publicIndex !== -1) {
-            const subDir = path.substring(0, publicIndex);
-            return `${origin}${subDir}/shortly-app/public/index.php/u/${auth.user.username}`;
-        }
-
-        const dashboardIndex = pathLower.indexOf('/dashboard');
-        if (dashboardIndex !== -1) {
-            const subDir = path.substring(0, dashboardIndex);
-            return `${origin}${subDir}/shortly-app/public/index.php/u/${auth.user.username}`;
-        }
-
-        return `${origin}/shortly-app/public/index.php/u/${auth.user.username}`;
-    })();
+    const publicUrl = `http://hfg093wdn44.sn.mynetname.net:8081/shortly-app/public/index.php/u/${auth.user.username}`;
 
     const fallbackCopy = (text) => {
         const textArea = document.createElement("textarea");
