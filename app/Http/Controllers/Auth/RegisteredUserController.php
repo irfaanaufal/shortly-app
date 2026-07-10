@@ -28,6 +28,7 @@ class RegisteredUserController extends Controller
 
     public function checkKaryawan($fid): JsonResponse
     {
+        $fid = trim($fid);
         $karyawan = Karyawan::where('fid', $fid)->first();
 
         if (!$karyawan) {

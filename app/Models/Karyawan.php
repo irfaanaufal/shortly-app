@@ -9,7 +9,17 @@ class Karyawan extends Model
 {
     protected $table = 'karyawans';
 
-    protected $fillable = ['fid', 'nama_karyawan', 'divisi', 'jabatan', 'status'];
+    protected $primaryKey = 'fid';
+    public $incrementing = false;
+    protected $keyType = 'string';
+
+    protected $fillable = [
+        'fid',
+        'nama_karyawan',
+        'divisi',
+        'jabatan',
+        'status',
+    ];
 
     public function user(): HasOne
     {

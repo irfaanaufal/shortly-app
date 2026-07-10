@@ -1,7 +1,6 @@
 import InputError from '@/Components/InputError';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 
 export default function Register() {
     const [isDesktop, setIsDesktop] = useState(typeof window !== 'undefined' ? window.innerWidth >= 768 : false);
@@ -31,16 +30,26 @@ export default function Register() {
         setChecking(true);
         setFidError('');
         try {
-            const res = await axios.get(`/register/check-karyawan/${fidInput.trim()}`);
-            if (res.data.success) {
-                setFidData(res.data.karyawan);
-                setData('fid', res.data.karyawan.fid);
-                setData('name', res.data.karyawan.nama_karyawan);
+            const response = await fetch(route('register.check-karyawan', fidInput.trim()));
+            const result = await response.json();
+
+            if (!response.ok) {
+                setFidError(result.message || 'Terjadi kesalahan saat memeriksa FID.');
+                setChecking(false);
+                return;
+            }
+
+            if (result.success) {
+                setFidData(result.karyawan);
+                setData((prevData) => ({
+                    ...prevData,
+                    fid: result.karyawan.fid,
+                    name: result.karyawan.nama_karyawan,
+                }));
                 setStep('register');
             }
         } catch (err) {
-            const msg = err.response?.data?.message || 'FID tidak ditemukan.';
-            setFidError(msg);
+            setFidError('Gagal menghubungkan ke server. Coba lagi.');
         } finally {
             setChecking(false);
         }
