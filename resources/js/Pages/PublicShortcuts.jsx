@@ -172,7 +172,7 @@ export default function PublicShortcuts({ owner, shortcuts = [] }) {
                                     </div>
                                 </div>
                                 
-                                <span className="text-[10px] sm:text-xs font-bold text-neutral-800 dark:text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-white truncate w-full px-1">
+                                <span className="text-[10px] sm:text-xs font-bold text-neutral-800 dark:text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-white line-clamp-2 w-full px-1">
                                     {shortcut.name}
                                 </span>
                             </a>

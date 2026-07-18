@@ -72,11 +72,19 @@ export default function Register() {
                 <Head title="Register" />
 
                 {/* ===== BLACK SECTION ===== */}
-                <div className={`${isDesktop ? 'flex-1' : 'shrink-0 h-[22vh]'} bg-black flex items-center justify-center`}>
+                <div className={`${isDesktop ? 'flex-1' : 'shrink-0 h-[22vh]'} bg-black flex items-center justify-center relative`}>
                     <svg xmlns="http://www.w3.org/2000/svg" width={isDesktop ? 150 : 60} height={isDesktop ? 150 : 60} viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                         <circle cx="12" cy="8" r="4" />
                         <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
                     </svg>
+                    <a
+                        href="https://heyzine.com/flip-book/94f3ccbd7e.html"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="absolute bottom-8 left-1/2 -translate-x-1/2 text-[11px] text-white/30 hover:text-white/60 transition-colors no-underline"
+                    >
+                        Manual Book
+                    </a>
                 </div>
 
                 {/* ===== FORM SECTION ===== */}
@@ -131,11 +139,19 @@ export default function Register() {
             <Head title="Register" />
 
             {/* ===== BLACK SECTION ===== */}
-            <div className={`${isDesktop ? 'flex-1' : 'shrink-0 h-[22vh]'} bg-black flex items-center justify-center`}>
+            <div className={`${isDesktop ? 'flex-1' : 'shrink-0 h-[22vh]'} bg-black flex items-center justify-center relative`}>
                 <svg xmlns="http://www.w3.org/2000/svg" width={isDesktop ? 150 : 60} height={isDesktop ? 150 : 60} viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="12" cy="8" r="4" />
                     <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
                 </svg>
+                <a
+                    href="https://heyzine.com/flip-book/94f3ccbd7e.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="absolute bottom-8 left-1/2 -translate-x-1/2 text-[11px] text-white/30 hover:text-white/60 transition-colors no-underline"
+                >
+                    Manual Book
+                </a>
             </div>
 
             {/* ===== FORM SECTION ===== */}
