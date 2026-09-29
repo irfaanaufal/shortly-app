@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -10,20 +11,9 @@ class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
 
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
         $this->call(AdminSeeder::class);
-
-        User::factory()->create([
-            'name' => 'User01',
-            'username' => 'User01',
-            'email' => 'user01@example.com',
-            'password' => 'password',
-            'role' => 'user',
-        ]);
 
         $shortcuts = [
             [
@@ -32,6 +22,7 @@ class DatabaseSeeder extends Seeder
                 'description' => 'Quality Control System',
                 'icon' => 'ClipboardList',
                 'color' => 'from-red-500 to-red-700',
+                'category' => 'Quality Control',
             ],
             [
                 'name' => 'Admin',
@@ -39,6 +30,7 @@ class DatabaseSeeder extends Seeder
                 'description' => 'Admin Dashboard',
                 'icon' => 'UserCog',
                 'color' => 'from-green-500 to-emerald-600',
+                'category' => 'Administrasi',
             ],
             [
                 'name' => 'Purchase',
@@ -46,6 +38,7 @@ class DatabaseSeeder extends Seeder
                 'description' => 'Purchase Request',
                 'icon' => 'ShoppingCart',
                 'color' => 'from-red-500 to-orange-500',
+                'category' => 'Pengadaan',
             ],
             [
                 'name' => 'Inventory',
@@ -53,6 +46,7 @@ class DatabaseSeeder extends Seeder
                 'description' => 'Inventory Management',
                 'icon' => 'Package',
                 'color' => 'from-purple-500 to-pink-500',
+                'category' => 'Inventaris',
             ],
             [
                 'name' => 'Ekspedisi',
@@ -60,6 +54,7 @@ class DatabaseSeeder extends Seeder
                 'description' => 'Ekspedisi',
                 'icon' => 'Truck',
                 'color' => 'from-indigo-500 to-violet-600',
+                'category' => 'Ekspedisi',
             ],
             [
                 'name' => 'Absensi',
@@ -67,6 +62,7 @@ class DatabaseSeeder extends Seeder
                 'description' => 'Absensi',
                 'icon' => 'Calendar',
                 'color' => 'from-yellow-500 to-amber-500',
+                'category' => 'HRD',
             ],
         ];
 

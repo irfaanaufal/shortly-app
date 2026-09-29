@@ -8,9 +8,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('shortcuts', function (Blueprint $table) {
-            $table->foreignId('user_id')->nullable()->after('id')->constrained()->cascadeOnDelete();
-        });
+        if (!Schema::hasColumn('shortcuts', 'user_id')) {
+            Schema::table('shortcuts', function (Blueprint $table) {
+                $table->foreignId('user_id')->nullable()->after('id')->constrained()->cascadeOnDelete();
+            });
+        }
     }
 
     /**

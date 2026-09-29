@@ -2,33 +2,53 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 class AdminSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
+        Role::whereNull('level')->delete();
+
+        $roles = [
+            ['name' => 'IT', 'level' => 1],
+            ['name' => 'Direktur Utama', 'level' => 2],
+            ['name' => 'Head Admin', 'level' => 3],
+            ['name' => 'HRD', 'level' => 4],
+            ['name' => 'Admin', 'level' => 5],
+            ['name' => 'Teknisi', 'level' => 6],
+            ['name' => 'QA', 'level' => 7],
+            ['name' => 'QC', 'level' => 8],
+            ['name' => 'Ekspedisi', 'level' => 9],
+        ];
+
+        foreach ($roles as $role) {
+            Role::firstOrCreate(['name' => $role['name']], ['level' => $role['level']]);
+        }
+
+        $itRole = Role::where('name', 'IT')->first();
+        $adminRole = Role::where('name', 'Admin')->first();
+
         User::updateOrCreate(
-            ['email' => 'irfaanaufal04@gmail.com'],
+            ['email' => env('IT_EMAIL', 'it@ptsam.co.id')],
             [
-                'name' => 'Irfaanaufal',
-                'username' => 'Irfaanaufal',
-                'password' => Hash::make('password'),
-                'role' => 'admin',
+                'name' => 'IT Admin',
+                'username' => 'itadmin',
+                'password' => Hash::make(env('IT_PASSWORD', 'password')),
+                'role_id' => $itRole->id,
             ]
         );
+
         User::updateOrCreate(
-            ['email' => 'hendi@gmail.com'],
+            ['email' => env('ADMIN_EMAIL', 'admin@ptsam.co.id')],
             [
-                'name' => 'hendi',
-                'username' => 'hendi',
-                'password' => Hash::make('password'),
-                'role' => 'admin',
+                'name' => 'Admin',
+                'username' => 'admin',
+                'password' => Hash::make(env('ADMIN_PASSWORD', 'password')),
+                'role_id' => $adminRole->id,
             ]
         );
     }

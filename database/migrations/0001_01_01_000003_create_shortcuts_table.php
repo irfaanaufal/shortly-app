@@ -11,21 +11,25 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('shortcuts', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('url');
-            $table->string('description')->nullable();
-            $table->string('icon');
-            $table->string('color');
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('shortcuts')) {
+            Schema::create('shortcuts', function (Blueprint $table) {
+                $table->id();
+                $table->string('name');
+                $table->string('url');
+                $table->string('description')->nullable();
+                $table->string('icon');
+                $table->string('color');
+                $table->timestamps();
+            });
+        }
 
-        Schema::create('shortcut_user', function (Blueprint $table) {
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('shortcut_id')->constrained()->cascadeOnDelete();
-            $table->primary(['user_id', 'shortcut_id']);
-        });
+        if (!Schema::hasTable('shortcut_user')) {
+            Schema::create('shortcut_user', function (Blueprint $table) {
+                $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+                $table->foreignId('shortcut_id')->constrained()->cascadeOnDelete();
+                $table->primary(['user_id', 'shortcut_id']);
+            });
+        }
     }
 
     /**

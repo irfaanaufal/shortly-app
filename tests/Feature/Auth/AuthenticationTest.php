@@ -22,7 +22,7 @@ class AuthenticationTest extends TestCase
         $user = User::factory()->create();
 
         $response = $this->post('/login', [
-            'email' => $user->email,
+            'username' => $user->username,
             'password' => 'password',
         ]);
 
@@ -35,7 +35,7 @@ class AuthenticationTest extends TestCase
         $user = User::factory()->create();
 
         $this->post('/login', [
-            'email' => $user->email,
+            'username' => $user->username,
             'password' => 'wrong-password',
         ]);
 
@@ -50,5 +50,19 @@ class AuthenticationTest extends TestCase
 
         $this->assertGuest();
         $response->assertRedirect('/');
+    }
+
+    public function test_soft_deleted_user_cannot_login(): void
+    {
+        $user = User::factory()->create();
+        $user->deleted_at = now();
+        $user->save();
+
+        $this->post('/login', [
+            'username' => $user->username,
+            'password' => 'password',
+        ]);
+
+        $this->assertGuest();
     }
 }

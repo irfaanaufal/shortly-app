@@ -6,8 +6,9 @@ use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -37,47 +38,21 @@ class ProfileController extends Controller
         }
 
         if ($request->hasFile('profile_photo')) {
-            // Delete old photo if exists
-            if ($user->profile_photo_path) {
-                $oldPath = public_path($user->profile_photo_path);
-                if (file_exists($oldPath)) {
-                    @unlink($oldPath);
-                }
+            if ($user->avatar_path) {
+                Storage::disk('public')->delete($user->avatar_path);
             }
 
             $file = $request->file('profile_photo');
-            $extension = strtolower($file->getClientOriginalExtension());
+            $extension = strtolower($file->guessExtension() ?? 'jpg');
             $filename = \Illuminate\Support\Str::random(40) . '.' . $extension;
 
-            // Simpan langsung di dalam folder public/profile-photos agar tidak butuh symlink storage:link
-            $file->move(public_path('profile-photos'), $filename);
-            
-            $user->profile_photo_path = 'profile-photos/' . $filename;
+            $file->storeAs('profile-photos', $filename, 'public');
+
+            $user->avatar_path = 'profile-photos/' . $filename;
         }
 
         $user->save();
 
-        return Redirect::route('profile.edit');
-    }
-
-    /**
-     * Delete the user's account.
-     */
-    public function destroy(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'password' => ['required', 'current_password'],
-        ]);
-
-        $user = $request->user();
-
-        Auth::logout();
-
-        $user->delete();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return Redirect::to('/');
+        return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 }

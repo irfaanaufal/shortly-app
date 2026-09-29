@@ -10,6 +10,16 @@ export default {
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
         './resources/js/**/*.jsx',
+        './resources/js/**/*.js',
+    ],
+
+    safelist: [
+        {
+            pattern: /from-(red|blue|green|yellow|orange|purple|pink|indigo|violet|fuchsia|teal|cyan|sky|emerald|lime|rose|amber|slate|gray|zinc|stone|neutral)-(50|100|200|300|400|500|600|700|800|900|950)/,
+        },
+        {
+            pattern: /to-(red|blue|green|yellow|orange|purple|pink|indigo|violet|fuchsia|teal|cyan|sky|emerald|lime|rose|amber|slate|gray|zinc|stone|neutral)-(50|100|200|300|400|500|600|700|800|900|950)/,
+        },
     ],
 
     theme: {
