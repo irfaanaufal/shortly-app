@@ -109,7 +109,7 @@ class User extends Authenticatable
 
     public function getProfilePhotoUrlAttribute()
     {
-        return $this->avatar_path ? asset($this->avatar_path) : null;
+        return $this->avatar_path ? asset('storage/' . ltrim($this->avatar_path, '/')) : null;
     }
 
     protected function casts(): array

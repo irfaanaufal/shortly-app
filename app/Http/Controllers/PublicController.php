@@ -22,7 +22,7 @@ class PublicController extends Controller
             'owner' => [
                 'name' => $user->name,
                 'username' => $user->username,
-                'profile_photo_url' => $user->avatar_path ? asset($user->avatar_path) : null,
+                'profile_photo_url' => $user->avatar_path ? asset('storage/' . ltrim($user->avatar_path, '/')) : null,
             ],
             'shortcuts' => $shortcuts,
         ]);
